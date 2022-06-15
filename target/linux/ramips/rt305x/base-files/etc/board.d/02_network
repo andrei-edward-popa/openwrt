@@ -89,6 +89,7 @@ ramips_setup_interfaces()
 	nixcore,x1-8m|\
 	olimex,rt5350f-olinuxino|\
 	olimex,rt5350f-olinuxino-evb|\
+	olimex,rt5350f-olinuxino-evb-plus|\
 	omnima,miniembplug|\
 	omnima,miniembwifi|\
 	planex,mzk-w300nh2|\
@@ -245,6 +246,7 @@ ramips_setup_macs()
 	nexaira,bc2|\
 	olimex,rt5350f-olinuxino|\
 	olimex,rt5350f-olinuxino-evb|\
+	olimex,rt5350f-olinuxino-evb-plus|\
 	petatel,psr-680w|\
 	skyline,sl-r7205)
 		lan_mac=$(macaddr_setbit_la "$(cat /sys/class/net/eth0/address)")

@@ -789,6 +789,16 @@ define Device/olimex_rt5350f-olinuxino-evb
 endef
 TARGET_DEVICES += olimex_rt5350f-olinuxino-evb
 
+define Device/olimex_rt5350f-olinuxino-evb-plus
+  $(Device/uimage-lzma-loader)
+  SOC := rt5350
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := OLIMEX
+  DEVICE_MODEL := RT5350F-OLinuXino-EVB+
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb-ohci kmod-usb2 kmod-i2c-core kmod-i2c-ralink kmod-spi-dev kmod-mmc-spi kmod-spi-bitbang kmod-spi-gpio
+endef
+TARGET_DEVICES += olimex_rt5350f-olinuxino-evb-plus
+
 define Device/omnima_miniembplug
   SOC := rt5350
   IMAGE_SIZE := 7872k

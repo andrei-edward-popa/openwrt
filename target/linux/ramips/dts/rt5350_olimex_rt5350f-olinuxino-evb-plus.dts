@@ -1,0 +1,181 @@
+#include "rt5350_olimex_rt5350f-olinuxino.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "olimex,rt5350f-olinuxino-evb", "ralink,rt5350-soc";
+	model = "Olimex RT5350F-OLinuXino-EVB";
+	
+	aliases {
+		spi0 = &spi_mmc;
+		spi1 = &spi_uext;
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		relay1 {
+			gpio-export,name = "relay1";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+		};
+
+		relay2 {
+			gpio-export,name = "relay2";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+		};
+
+		button {
+			gpio-export,name = "button";
+			gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+	
+	spi_mmc: spi-mmc {
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		ranges;
+
+		sck-gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+		miso-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
+		cs-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>, <&gpio1 5 GPIO_ACTIVE_HIGH>;
+		num-chipselects = <2>;
+
+		flash@0 {
+			compatible = "jedec,spi-nor";
+			reg = <0>;
+			spi-max-frequency = <10000000>;
+
+			partitions {
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+					label = "u-boot";
+					reg = <0x0 0x30000>;
+					read-only;
+				};
+
+				partition@30000 {
+					label = "u-boot-env";
+					reg = <0x30000 0x10000>;
+					read-only;
+				};
+
+				factory: partition@40000 {
+					label = "factory";
+					reg = <0x40000 0x10000>;
+					read-only;
+				};
+
+				partition@50000 {
+					compatible = "denx,uimage";
+					label = "firmware";
+					reg = <0x50000 0x7b0000>;
+				};
+			};
+		};
+
+		mmc-slot@0 {
+			compatible = "mmc-spi-slot";
+			reg = <1>;
+
+			voltage-ranges = <3200 3400>;
+			spi-max-frequency = <1000000>;
+
+			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+		};
+	};
+	
+	spi_uext: spi-uext {
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		ranges;
+
+		sck-gpios = <&gpio0 20 GPIO_ACTIVE_HIGH>;
+		miso-gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>;
+		cs-gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
+		num-chipselects = <1>;
+
+		spidev@1 {
+			compatible = "spidev";
+			status = "okay";
+			reg = <0>;
+			spi-max-frequency = <1000000>;
+		};
+	};
+};
+
+&spi0 {
+	status = "disabled";
+	/delete-node/ flash@0;
+};
+
+&ethernet {
+	nvmem-cells = <&macaddr_factory_4>;
+	nvmem-cell-names = "mac-address";
+};
+
+&esw {
+	mediatek,portmap = <0x2f>;
+	mediatek,led_polarity = <0x17>;
+};
+
+&wmac {
+	ralink,mtd-eeprom = <&factory 0x0>;
+	ralink,led-polarity = <1>;
+};
+
+&ehci {
+	status = "okay";
+};
+
+&ohci {
+	status = "okay";
+};
+
+&i2c {
+	status = "okay";
+};
+
+&uart {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&factory {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_factory_4: macaddr@4 {
+		reg = <0x4 0x6>;
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "jtag";
+		function = "gpio";
+	};
+	uartf_gpio {
+		groups = "uartf";
+		function = "gpio uartf";
+	};
+	spi_pins {
+		groups = "spi";
+		function = "gpio";
+	};
+	spi_cs1 {
+		groups = "spi_cs1";
+		function = "gpio";
+	};
+};
